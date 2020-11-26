@@ -107,7 +107,7 @@ export class PortMap {
 
 export abstract class LabelGenerator {
 	constructor () { }
-	abstract Generate (Service: Service): string;
+	abstract Generate (Service: Service): string[];
 }
 
 export class Deploy {
