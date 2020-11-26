@@ -144,36 +144,25 @@ export class Service {
 		public command?: string
 	) { }
 
-	AddNetwork (instance: Network) {
-		this.networks.add(instance);
+	AddNetwork (...instances: Network[]) {
+		instances.forEach(x => this.networks.add(x));
 	}
-
+	AddVolume (...instances: Mountable[]) {
+		instances.forEach(x => this.volumes.add(x));
+	}
+	AddPort (...instances: Array<PortMap | [ number, number ]>) {
+		instances.forEach(x => {
+			if (x instanceof PortMap)
+				this.ports.add(x);
+			else
+				this.ports.add(new PortMap(x[ 0 ], x[ 1 ]));
+		});
+	}
+	AddLabelGenerator (...instances: LabelGenerator[]) {
+		instances.forEach(x => this.deploy.AddLabelGenerator(x));
+	}
 	AddEnvironment (key: string, value: string) {
 		this.environment[ key ] = value.toString();
-	}
-
-	AddVolume (instance: Mountable) {
-		this.volumes.add(instance);
-	}
-
-	AddPort (instance: PortMap) {
-		this.ports.add(instance);
-	}
-
-	AddLabelGenerator (instance: LabelGenerator) {
-		this.deploy.AddLabelGenerator(instance);
-	}
-
-	Bind (
-		Networks: Network[],
-		Volumes: Mountable[],
-		Ports: [ number, number ][],
-		LabelGenerators: LabelGenerator[]
-	) {
-		Networks.forEach(x => this.AddNetwork(x));
-		Volumes.forEach(x => this.AddVolume(x));
-		Ports.forEach(x => this.AddPort(new PortMap(x[ 0 ], x[ 1 ])));
-		LabelGenerators.forEach(x => this.AddLabelGenerator(x));
 	}
 
 	Compose () {
@@ -193,22 +182,24 @@ export class Compose {
 	services: Set<Service> = new Set;
 	networks: Set<Network> = new Set();
 
-	AddNetwork (instance: Network) {
-		this.networks.add(instance);
+	AddNetwork (...instances: Network[]) {
+		instances.forEach(x => this.networks.add(x));
 	}
 
-	AddVolume (instance: Volume) {
-		this.volumes.add(instance);
+	AddVolume (...instances: Volume[]) {
+		instances.forEach(x => this.volumes.add(x));
 	}
 
-	AddService (instance: Service) {
-		this.services.add(instance);
-		instance.volumes.forEach(x => {
-			if (x instanceof Volume)
-				this.AddVolume(x);
-		});
-		instance.networks.forEach(x => {
-			this.AddNetwork(x);
+	AddService (...instances: Service[]) {
+		instances.forEach(x => {
+			this.services.add(x);
+			x.volumes.forEach(x => {
+				if (x instanceof Volume)
+					this.AddVolume(x);
+			});
+			x.networks.forEach(x => {
+				this.AddNetwork(x);
+			});
 		});
 	}
 
@@ -219,16 +210,6 @@ export class Compose {
 			services: toObject(this.services, (key, value) => [ key, value.Compose() ]),
 			volumes: toObject(this.volumes, (key, value) => [ key, value.Compose() ])
 		});
-	}
-
-	Bind (
-		Services: Service[],
-		Networks: Network[],
-		Volumes: Volume[],
-	) {
-		Networks.forEach(x => this.AddNetwork(x));
-		Volumes.forEach(x => this.AddVolume(x));
-		Services.forEach(x => this.AddService(x));
 	}
 
 	Print () {
