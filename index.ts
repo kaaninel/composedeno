@@ -132,6 +132,18 @@ export class Service {
 		this.ports.add(instance);
 	}
 
+	Bind (
+		Data: {
+			Networks: Network[],
+			Volumes: Volume[],
+			Ports: [ number, number ][];
+		}
+	) {
+		Data.Networks.forEach(x => this.AddNetwork(x));
+		Data.Volumes.forEach(x => this.AddVolume(x));
+		Data.Ports.forEach(x => this.AddPort(new PortMap(x[ 0 ], x[ 1 ])));
+	}
+
 	Docker () {
 		return new DockerService({
 			image: this.image.Service(),
