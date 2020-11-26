@@ -114,6 +114,7 @@ export class DockerService {
 	environment: Record<string, string> = {};
 	command?: string;
 	volumes: DockerServiceVolume[] = [];
+	deploy?: DockerServiceDeploy;
 
 	constructor (Data: Partial<DockerService>) {
 		Object.assign(this, Data);;

@@ -8,7 +8,8 @@ import {
 	DockerServiceNetwork,
 	DockerService,
 	DockerImage,
-	DockerCompose
+	DockerCompose,
+	DockerServiceDeploy
 } from "./Docker.ts";
 
 class Mountable {
@@ -33,7 +34,7 @@ export class Volume extends Mountable {
 		super(name, destination, readonly);
 	}
 
-	Docker () {
+	Compose () {
 		return new DockerVolume({
 			external: this.external
 		});
@@ -65,7 +66,7 @@ export class Network {
 		});
 	}
 
-	Docker () {
+	Compose () {
 		return new DockerNetwork({
 			attachable: this.attachable,
 			driver: this.driver,
@@ -104,11 +105,35 @@ export class PortMap {
 	}
 }
 
+type LabelGenerator = (target: Service) => string[];
+
+export class Deploy {
+
+	labelGenerators: Set<LabelGenerator> = new Set();
+
+	constructor (
+		public replicas = 1,
+	) { }
+
+	AddLabelGenerator (instance: LabelGenerator) {
+		this.labelGenerators.add(instance);
+	}
+
+	Service (target: Service) {
+		return new DockerServiceDeploy({
+			labels: Array.from(this.labelGenerators).flatMap(x => x(target)),
+			replicas: this.replicas
+		});
+	}
+
+}
+
 export class Service {
 	networks: Set<Network> = new Set();
 	volumes: Set<Mountable> = new Set();
 	ports: Set<PortMap> = new Set();
 	environment: Record<string, string> = {};
+	deploy = new Deploy();
 
 	constructor (
 		public name: string,
@@ -132,25 +157,30 @@ export class Service {
 		this.ports.add(instance);
 	}
 
-	Bind (
-		Data: {
-			Networks: Network[],
-			Volumes: Mountable[],
-			Ports: [ number, number ][];
-		}
-	) {
-		Data.Networks.forEach(x => this.AddNetwork(x));
-		Data.Volumes.forEach(x => this.AddVolume(x));
-		Data.Ports.forEach(x => this.AddPort(new PortMap(x[ 0 ], x[ 1 ])));
+	AddLabelGenerator (instance: LabelGenerator) {
+		this.deploy.AddLabelGenerator(instance);
 	}
 
-	Docker () {
+	Bind (
+		Networks: Network[],
+		Volumes: Mountable[],
+		Ports: [ number, number ][],
+		LabelGenerators: LabelGenerator[]
+	) {
+		Networks.forEach(x => this.AddNetwork(x));
+		Volumes.forEach(x => this.AddVolume(x));
+		Ports.forEach(x => this.AddPort(new PortMap(x[ 0 ], x[ 1 ])));
+		LabelGenerators.forEach(x => this.AddLabelGenerator(x));
+	}
+
+	Compose () {
 		return new DockerService({
 			image: this.image.Service(),
 			environment: this.environment,
 			network: toObject(this.networks, (key, value) => [ key, value.Service(this) ]),
 			volumes: Array.from(this.volumes).map(x => x.Service(this)),
 			command: this.command,
+			deploy: this.deploy.Service(this)
 		});
 	}
 }
@@ -179,17 +209,27 @@ export class Compose {
 		});
 	}
 
-	Docker (version = "3.8") {
+	Compose (version = "3.8") {
 		return new DockerCompose({
 			version,
-			networks: toObject(this.networks, (key, value) => [ key, value.Docker() ]),
-			services: toObject(this.services, (key, value) => [ key, value.Docker() ]),
-			volumes: toObject(this.volumes, (key, value) => [ key, value.Docker() ])
+			networks: toObject(this.networks, (key, value) => [ key, value.Compose() ]),
+			services: toObject(this.services, (key, value) => [ key, value.Compose() ]),
+			volumes: toObject(this.volumes, (key, value) => [ key, value.Compose() ])
 		});
 	}
 
+	Bind (
+		Services: Service[],
+		Networks: Network[],
+		Volumes: Volume[],
+	) {
+		Networks.forEach(x => this.AddNetwork(x));
+		Volumes.forEach(x => this.AddVolume(x));
+		Services.forEach(x => this.AddService(x));
+	}
+
 	Print () {
-		console.log(stringify(JSON.parse(JSON.stringify(this.Docker()))));
+		console.log(stringify(JSON.parse(JSON.stringify(this.Compose()))));
 	}
 }
 
