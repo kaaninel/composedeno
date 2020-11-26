@@ -105,7 +105,10 @@ export class PortMap {
 	}
 }
 
-type LabelGenerator = (target: Service) => string[];
+export abstract class LabelGenerator {
+	constructor () { }
+	abstract Generate (Service: Service): string;
+}
 
 export class Deploy {
 
@@ -121,7 +124,7 @@ export class Deploy {
 
 	Service (target: Service) {
 		return new DockerServiceDeploy({
-			labels: Array.from(this.labelGenerators).flatMap(x => x(target)),
+			labels: Array.from(this.labelGenerators).flatMap(x => x.Generate(target)),
 			replicas: this.replicas
 		});
 	}
