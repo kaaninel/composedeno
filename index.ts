@@ -135,7 +135,7 @@ export class Service {
 	Bind (
 		Data: {
 			Networks: Network[],
-			Volumes: Volume[],
+			Volumes: Mountable[],
 			Ports: [ number, number ][];
 		}
 	) {
