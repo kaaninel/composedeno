@@ -76,6 +76,12 @@ export class DockerServiceDeploy {
 	labels: string[] = [];
 	replicas = 1;
 
+	placement: {
+		constraints: string[];
+	} = {
+			constraints: []
+		};
+
 	constructor (Data: Partial<DockerServiceDeploy>) {
 		Object.assign(this, Data);;
 	}

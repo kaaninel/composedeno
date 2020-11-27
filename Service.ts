@@ -22,19 +22,27 @@ export class Image {
 export class Deploy {
 
 	labelGenerators: Set<LabelGenerator> = new Set();
+	constraintsGenerators: Set<LabelGenerator> = new Set();
 
 	constructor (
 		public replicas = 1,
 	) { }
 
-	AddLabelGenerator (instance: LabelGenerator) {
-		this.labelGenerators.add(instance);
+
+	AddLabelGenerator (...instances: LabelGenerator[]) {
+		instances.forEach(x => this.labelGenerators.add(x));
+	}
+	AddConstraintsGenerator (...instances: LabelGenerator[]) {
+		instances.forEach(x => this.constraintsGenerators.add(x));
 	}
 
 	Service (target: Service) {
 		return new DockerServiceDeploy({
 			labels: Array.from(this.labelGenerators).flatMap(x => x.Generate(target)),
-			replicas: this.replicas
+			replicas: this.replicas,
+			placement: {
+				constraints: Array.from(this.constraintsGenerators).flatMap(x => x.Generate(target))
+			}
 		});
 	}
 
@@ -66,9 +74,6 @@ export class Service {
 			else
 				this.ports.add(new PortMap(x[ 0 ], x[ 1 ]));
 		});
-	}
-	AddLabelGenerator (...instances: LabelGenerator[]) {
-		instances.forEach(x => this.deploy.AddLabelGenerator(x));
 	}
 	AddEnvironment (key: string, value: string) {
 		this.environment[ key ] = value.toString();
