@@ -1,6 +1,6 @@
 import { LabelGenerator, Network, PortMap } from "./Network.ts";
 import { Mountable } from "./Volume.ts";
-import { DockerImage, DockerServiceDeploy, DockerService } from "./Docker.ts";
+import { DockerImage, DockerServiceDeploy, DockerService, DockerServiceHealthcheck } from "./Docker.ts";
 import { toObject } from "./Util.ts";
 
 export class Image {
@@ -28,7 +28,6 @@ export class Deploy {
 		public replicas = 1,
 	) { }
 
-
 	AddLabelGenerator (...instances: LabelGenerator[]) {
 		instances.forEach(x => this.labelGenerators.add(x));
 	}
@@ -48,12 +47,32 @@ export class Deploy {
 
 }
 
+export class Healthcheck {
+
+	constructor (
+		public Test: string[],
+		public Retries = 3,
+		public Timeout = "20s",
+		public Interval = "30s",
+	) { }
+
+	Service (_target: Service) {
+		return new DockerServiceHealthcheck({
+			interval: this.Interval,
+			retries: this.Retries,
+			test: this.Test,
+			timeout: this.Timeout,
+		});
+	}
+}
+
 export class Service {
 	networks: Set<Network> = new Set();
 	volumes: Set<Mountable> = new Set();
 	ports: Set<PortMap> = new Set();
 	environment: Record<string, string> = {};
-	deploy = new Deploy();
+	deploy?: Deploy;
+	healthcheck?: Healthcheck;
 
 	constructor (
 		public name: string,
@@ -86,7 +105,8 @@ export class Service {
 			network: toObject(this.networks, (key, value) => [ key, value.Service(this) ]),
 			volumes: Array.from(this.volumes).map(x => x.Service(this)),
 			command: this.command,
-			deploy: this.deploy.Service(this)
+			deploy: this.deploy?.Service(this),
+			healthcheck: this.healthcheck?.Service(this)
 		});
 	}
 }

@@ -87,6 +87,19 @@ export class DockerServiceDeploy {
 	}
 }
 
+export class DockerServiceHealthcheck {
+
+	public test: string[] = [];
+	public interval = "30s";
+	public timeout = "20s";
+	public retries = 3;
+
+	constructor (Data: Partial<DockerServiceHealthcheck>) {
+		Object.assign(this, Data);
+	}
+
+}
+
 export class DockerServiceVolume {
 	source!: string;
 	destination!: string;
@@ -120,7 +133,9 @@ export class DockerService {
 	environment: Record<string, string> = {};
 	command?: string;
 	volumes: DockerServiceVolume[] = [];
+	secrets: string[] = [];
 	deploy?: DockerServiceDeploy;
+	healthcheck?: DockerServiceHealthcheck;
 
 	constructor (Data: Partial<DockerService>) {
 		Object.assign(this, Data);;
