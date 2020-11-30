@@ -149,7 +149,7 @@ export class DockerService {
 	image?: DockerImage;
 
 	build?: DockerServiceBuild;
-	network: Record<string, DockerServiceNetwork> = {};
+	networks: Record<string, DockerServiceNetwork> = {};
 	environment: Record<string, string> = {};
 	command?: string;
 	volumes: DockerServiceVolume[] = [];

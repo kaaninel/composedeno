@@ -134,7 +134,7 @@ export class Service {
 	Compose () {
 		const compose = new DockerService({
 			environment: this.environment,
-			network: toObject(this.networks, (key, value) => [ key, value.Service(this) ]),
+			networks: toObject(this.networks, (key, value) => [ key, value.Service(this) ]),
 			volumes: Array.from(this.volumes).map(x => x.Service(this)),
 			command: this.Command,
 			deploy: this.deploy?.Service(this),
