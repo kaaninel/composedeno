@@ -6,7 +6,7 @@ export class Network {
 		public name: string,
 		private alias: (name: Service) => string,
 		private attachable = true,
-		private external = true,
+		private external = false,
 		private driver = DockerNetworkDrivers.Overlay
 	) { }
 
