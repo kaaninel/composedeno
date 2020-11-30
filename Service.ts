@@ -108,7 +108,7 @@ export class Service {
 	healthcheck?: Healthcheck;
 
 	constructor (
-		public Name: string,
+		public name: string,
 		public Base: Image | Build,
 		public Command?: string
 	) { }
