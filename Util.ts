@@ -15,6 +15,9 @@ export class TempFile {
 		return new Bind(this.filename, destination, readonly);
 	}
 
+	Path () {
+		return this.filename;
+	}
 }
 
 export function toObject<T extends { name: string; }, V> (

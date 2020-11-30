@@ -136,18 +136,33 @@ export class Healthcheck extends Instruction {
 export class Stage {
 
 	constructor (
+		public Name: string,
 		public From: From,
-		public EntryPoint: Entrypoint
+		public EntryPoint: Entrypoint,
+		public Instructions: Instruction[]
 	) { }
 
+	toJSON () {
+		return [
+			`${this.From} as ${this.Name}`,
+			this.EntryPoint,
+			this.Instructions
+		];
+	}
 }
 
 export class Dockerfile {
 
 	public Stages: Stage[] = [];
 
-	constructor () {
+	constructor () { }
 
+	toJSON () {
+		return this.Stages;
+	}
+
+	toString () {
+		return this.toJSON().join("\n");
 	}
 
 }

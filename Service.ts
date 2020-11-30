@@ -1,7 +1,8 @@
 import { LabelGenerator, Network, PortMap } from "./Network.ts";
 import { Mountable } from "./Volume.ts";
-import { DockerImage, DockerServiceDeploy, DockerService, DockerServiceHealthcheck } from "./Docker/Docker.ts";
-import { toObject } from "./Util.ts";
+import { DockerImage, DockerServiceDeploy, DockerService, DockerServiceHealthcheck, DockerServiceBuild } from "./Docker/Docker.ts";
+import { TempFile, toObject } from "./Util.ts";
+import { Dockerfile } from "./Docker/File.ts";
 
 export class Image {
 	constructor (
@@ -47,6 +48,36 @@ export class Deploy {
 
 }
 
+export class Build {
+
+	constructor (
+		public File: Dockerfile,
+		public Context?: string,
+		public Target?: string,
+		public Network?: Network,
+		public ArgumentGenerator: LabelGenerator[] = [],
+		public LabelGenerator: LabelGenerator[] = [],
+		public CacheFrom: string[] = [],
+		public SHMSize?: string,
+	) {
+
+	}
+
+	Service (target: Service) {
+		return new DockerServiceBuild({
+			dockerfile: new TempFile(() => this.File.toString()).Path(),
+			context: this.Context || Deno.cwd(),
+			args: Array.from(this.ArgumentGenerator).flatMap(x => x.Generate(target)),
+			cache_from: this.CacheFrom,
+			labels: Array.from(this.LabelGenerator).flatMap(x => x.Generate(target)),
+			network: this.Network?.name,
+			shm_size: this.SHMSize,
+			target: this.Target
+		});
+	}
+
+}
+
 export class Healthcheck {
 
 	constructor (
@@ -77,9 +108,9 @@ export class Service {
 	healthcheck?: Healthcheck;
 
 	constructor (
-		public name: string,
-		public image: Image,
-		public command?: string
+		public Name: string,
+		public Base: Image | Build,
+		public Command?: string
 	) { }
 
 	AddNetwork (...instances: Network[]) {
@@ -101,14 +132,18 @@ export class Service {
 	}
 
 	Compose () {
-		return new DockerService({
-			image: this.image.Service(),
+		const compose = new DockerService({
 			environment: this.environment,
 			network: toObject(this.networks, (key, value) => [ key, value.Service(this) ]),
 			volumes: Array.from(this.volumes).map(x => x.Service(this)),
-			command: this.command,
+			command: this.Command,
 			deploy: this.deploy?.Service(this),
 			healthcheck: this.healthcheck?.Service()
 		});
+		if (this.Base instanceof Image)
+			compose.image = this.Base.Service();
+		else
+			compose.build = this.Base.Service(this);
+		return compose;
 	}
 }

@@ -10,7 +10,7 @@ export * from "./Service.ts";
 
 export class Compose {
 	volumes: Set<Volume> = new Set();
-	services: Set<Service> = new Set;
+	services: Set<Service> = new Set();
 	networks: Set<Network> = new Set();
 
 	AddNetwork (...instances: Network[]) {

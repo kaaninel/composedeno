@@ -1,3 +1,4 @@
+import { Dockerfile } from "./File.ts";
 
 export class DockerBase<T> {
 	constructor (Data: Partial<T>) {
@@ -128,8 +129,26 @@ export class DockerServicePort {
 	}
 }
 
+
+export class DockerServiceBuild {
+	dockerfile!: string;
+	context?: string;
+	args: string[] = [];
+	cache_from: string[] = [];
+	labels: string[] = [];
+	network?: string;
+	shm_size?: string;
+	target?: string;
+
+	constructor (Data: Partial<DockerServiceBuild>) {
+		Object.assign(this, Data);;
+	}
+}
+
 export class DockerService {
-	image!: DockerImage;
+	image?: DockerImage;
+
+	build?: DockerServiceBuild;
 	network: Record<string, DockerServiceNetwork> = {};
 	environment: Record<string, string> = {};
 	command?: string;
