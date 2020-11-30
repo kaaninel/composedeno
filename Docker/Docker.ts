@@ -93,6 +93,7 @@ export class DockerServiceHealthcheck {
 	public interval = "30s";
 	public timeout = "20s";
 	public retries = 3;
+	public start_period = "40s";
 
 	constructor (Data: Partial<DockerServiceHealthcheck>) {
 		Object.assign(this, Data);

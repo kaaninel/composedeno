@@ -1,5 +1,5 @@
 import { Service } from "./Service.ts";
-import { DockerNetworkDrivers, DockerServiceNetwork, DockerNetwork, DockerServicePort } from "./Docker.ts";
+import { DockerNetworkDrivers, DockerServiceNetwork, DockerNetwork, DockerServicePort } from "./Docker/Docker.ts";
 
 export class Network {
 	constructor (

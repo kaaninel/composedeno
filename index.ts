@@ -1,5 +1,5 @@
 import { stringify } from 'https://deno.land/std@0.79.0/encoding/yaml.ts';
-import { DockerCompose } from "./Docker.ts";
+import { DockerCompose } from "./Docker/Docker.ts";
 import { Network } from "./Network.ts";
 import { Service } from "./Service.ts";
 import { toObject } from "./Util.ts";

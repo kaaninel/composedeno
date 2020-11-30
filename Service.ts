@@ -1,6 +1,6 @@
 import { LabelGenerator, Network, PortMap } from "./Network.ts";
 import { Mountable } from "./Volume.ts";
-import { DockerImage, DockerServiceDeploy, DockerService, DockerServiceHealthcheck } from "./Docker.ts";
+import { DockerImage, DockerServiceDeploy, DockerService, DockerServiceHealthcheck } from "./Docker/Docker.ts";
 import { toObject } from "./Util.ts";
 
 export class Image {
@@ -54,14 +54,16 @@ export class Healthcheck {
 		public Retries = 3,
 		public Timeout = "20s",
 		public Interval = "30s",
+		public StartPeriod = "30s",
 	) { }
 
-	Service (_target: Service) {
+	Service () {
 		return new DockerServiceHealthcheck({
 			interval: this.Interval,
 			retries: this.Retries,
 			test: this.Test,
 			timeout: this.Timeout,
+			start_period: this.StartPeriod
 		});
 	}
 }
@@ -106,7 +108,7 @@ export class Service {
 			volumes: Array.from(this.volumes).map(x => x.Service(this)),
 			command: this.command,
 			deploy: this.deploy?.Service(this),
-			healthcheck: this.healthcheck?.Service(this)
+			healthcheck: this.healthcheck?.Service()
 		});
 	}
 }

@@ -1,5 +1,5 @@
 import { Service } from "./Service.ts";
-import { DockerServiceVolume, DockerVolume } from "./Docker.ts";
+import { DockerServiceVolume, DockerVolume } from "./Docker/Docker.ts";
 
 export class Mountable {
 	constructor (
