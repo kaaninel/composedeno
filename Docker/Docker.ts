@@ -154,6 +154,7 @@ export class DockerService {
 	command?: string;
 	volumes: DockerServiceVolume[] = [];
 	secrets: string[] = [];
+	depends_on: string[] = [];
 	deploy?: DockerServiceDeploy;
 	healthcheck?: DockerServiceHealthcheck;
 

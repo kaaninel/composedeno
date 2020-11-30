@@ -104,6 +104,7 @@ export class Service {
 	volumes: Set<Mountable> = new Set();
 	ports: Set<PortMap> = new Set();
 	environment: Record<string, string> = {};
+	Dependecies: Set<Service> = new Set();
 	deploy?: Deploy;
 	healthcheck?: Healthcheck;
 
@@ -118,6 +119,9 @@ export class Service {
 	}
 	AddVolume (...instances: Mountable[]) {
 		instances.forEach(x => this.volumes.add(x));
+	}
+	AddDependency (...instances: Service[]) {
+		instances.forEach(x => this.Dependecies.add(x));
 	}
 	AddPort (...instances: Array<PortMap | [ number, number ]>) {
 		instances.forEach(x => {
@@ -138,7 +142,8 @@ export class Service {
 			volumes: Array.from(this.volumes).map(x => x.Service(this)),
 			command: this.Command,
 			deploy: this.deploy?.Service(this),
-			healthcheck: this.healthcheck?.Service()
+			healthcheck: this.healthcheck?.Service(),
+			depends_on: Array.from(this.Dependecies).map(x => x.name)
 		});
 		if (this.Base instanceof Image)
 			compose.image = this.Base.Service();
