@@ -157,6 +157,7 @@ export class DockerService {
 	depends_on: string[] = [];
 	deploy?: DockerServiceDeploy;
 	healthcheck?: DockerServiceHealthcheck;
+	ports: DockerServicePort[] = [];
 
 	constructor (Data: Partial<DockerService>) {
 		Object.assign(this, Data);;

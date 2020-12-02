@@ -141,6 +141,7 @@ export class Service {
 			networks: toObject(this.networks, (key, value) => [ key, value.Service(this) ]),
 			volumes: Array.from(this.volumes).map(x => x.Service(this)),
 			command: this.Command,
+			ports: Array.from(this.ports).map(x => x.Service(this)),
 			deploy: this.deploy?.Service(this),
 			healthcheck: this.healthcheck?.Service(),
 			depends_on: Array.from(this.Dependecies).map(x => x.name)
