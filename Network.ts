@@ -12,7 +12,7 @@ export class Network {
 
 	Service (target: Service) {
 		return new DockerServiceNetwork({
-			aliases: [ this.alias(target) ]
+			aliases: [ this.alias(target), ...target.Aliases ]
 		});
 	}
 

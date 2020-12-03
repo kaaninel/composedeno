@@ -105,6 +105,7 @@ export class Service {
 	ports: Set<PortMap> = new Set();
 	environment: Record<string, string> = {};
 	Dependecies: Set<Service> = new Set();
+	Aliases: Set<string> = new Set();
 	deploy?: Deploy;
 	healthcheck?: Healthcheck;
 
@@ -133,6 +134,10 @@ export class Service {
 	}
 	AddEnvironment (key: string, value: string) {
 		this.environment[ key ] = value.toString();
+	}
+
+	AddAlias (key: string) {
+		this.Aliases.add(key);
 	}
 
 	Compose () {
