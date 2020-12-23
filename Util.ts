@@ -1,4 +1,7 @@
 import { Bind } from "./index.ts";
+import { createHash } from "https://deno.land/std/hash/mod.ts";
+import { join } from "https://deno.land/std/path/posix.ts";
+
 
 export class TempFile {
 
@@ -7,8 +10,12 @@ export class TempFile {
 	constructor (
 		public generator: () => string
 	) {
-		this.filename = Deno.makeTempFileSync({ prefix: "dockrr_" });
-		Deno.writeTextFileSync(this.filename, generator());
+		const content = generator();
+		const hash = createHash("md5");
+		hash.update(content);
+		const filename = hash.toString();
+		this.filename = join(Deno.env.get("TMPDIR") || "", `dockrr_${filename}`);
+		Deno.writeTextFileSync(this.filename, content);
 	}
 
 	Volume (destination: string, readonly = true) {
