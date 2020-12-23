@@ -14,7 +14,11 @@ export class TempFile {
 		const hash = createHash("md5");
 		hash.update(content);
 		const filename = hash.toString();
-		this.filename = join(Deno.env.get("TMPDIR") || "", `dockrr_${filename}`);
+		this.filename = join(
+			Deno.env.get("TMPDIR") ||
+			Deno.env.get("TEMPDIR") ||
+			Deno.env.get("TEMP") ||
+			"/tmp/", `dockrr_${filename}`);
 		Deno.writeTextFileSync(this.filename, content);
 	}
 
