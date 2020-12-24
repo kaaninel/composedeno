@@ -40,13 +40,14 @@ export class Deploy {
 	Service (target: Service) {
 		const instance = new DockerServiceDeploy({
 			labels: Array.from(this.labelGenerators).flatMap(x => x.Generate(target)),
-			replicas: this.replicas,
 			placement: {
 				constraints: Array.from(this.constraintsGenerators).flatMap(x => x.Generate(target)),
 			}
 		});
 		if (this.global)
 			instance.mode = "global";
+		else
+			instance.replicas = this.replicas;
 		return instance;
 	}
 
