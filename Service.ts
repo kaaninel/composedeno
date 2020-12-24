@@ -24,6 +24,7 @@ export class Deploy {
 
 	labelGenerators: Set<LabelGenerator> = new Set();
 	constraintsGenerators: Set<LabelGenerator> = new Set();
+	global = false;
 
 	constructor (
 		public replicas = 1,
@@ -37,13 +38,16 @@ export class Deploy {
 	}
 
 	Service (target: Service) {
-		return new DockerServiceDeploy({
+		const instance = new DockerServiceDeploy({
 			labels: Array.from(this.labelGenerators).flatMap(x => x.Generate(target)),
 			replicas: this.replicas,
 			placement: {
-				constraints: Array.from(this.constraintsGenerators).flatMap(x => x.Generate(target))
+				constraints: Array.from(this.constraintsGenerators).flatMap(x => x.Generate(target)),
 			}
 		});
+		if (this.global)
+			instance.mode = "global";
+		return instance;
 	}
 
 }

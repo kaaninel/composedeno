@@ -76,6 +76,7 @@ export class DockerServiceNetwork {
 export class DockerServiceDeploy {
 	labels: string[] = [];
 	replicas = 1;
+	mode?: string;
 
 	placement: {
 		constraints: string[];
