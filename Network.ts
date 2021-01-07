@@ -28,12 +28,14 @@ export class Network {
 export class PortMap {
 	constructor (
 		public source: number,
-		public destination: number
+		public destination: number,
+		public protocol?: string
 	) { }
 
 	Service (_target: Service) {
 		return new DockerServicePort({
 			source: this.source,
+			protocol: this.protocol,
 			destination: this.destination
 		});
 	}

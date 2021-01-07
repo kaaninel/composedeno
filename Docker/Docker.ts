@@ -120,13 +120,15 @@ export class DockerServiceVolume {
 export class DockerServicePort {
 	source!: number;
 	destination!: number;
+	protocol?: string;
 
 	constructor (Data: Partial<DockerServicePort>) {
 		Object.assign(this, Data);;
 	}
 
 	toJSON () {
-		return `${this.source}:${this.destination}`;
+		const protocol = this.protocol ? `/${this.protocol}` : "";
+		return `${this.source}:${this.destination}${protocol}`;
 	}
 }
 
