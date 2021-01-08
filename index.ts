@@ -43,7 +43,15 @@ export class Compose {
 		});
 	}
 
+	get Json () {
+		return JSON.stringify(this.Compose());
+	}
+
+	get Yaml () {
+		return stringify(JSON.parse(this.Json));
+	}
+
 	Print () {
-		console.log(stringify(JSON.parse(JSON.stringify(this.Compose()))));
+		console.log(this.Yaml);
 	}
 }
