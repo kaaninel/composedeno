@@ -138,14 +138,12 @@ export class Stage {
 	constructor (
 		public Name: string,
 		public From: From,
-		public EntryPoint: Entrypoint,
-		public Instructions: Instruction[]
+		public Instructions: Instruction[],
 	) { }
 
 	toJSON () {
 		return [
 			`${this.From} as ${this.Name}`,
-			this.EntryPoint,
 			this.Instructions
 		];
 	}
