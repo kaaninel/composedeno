@@ -144,7 +144,7 @@ export class Stage {
 	toJSON () {
 		return [
 			`${this.From} as ${this.Name}`,
-			this.Instructions
+			...this.Instructions.map(x => x.toJSON())
 		];
 	}
 }
@@ -156,7 +156,7 @@ export class Dockerfile {
 	constructor () { }
 
 	toJSON () {
-		return this.Stages;
+		return this.Stages.flatMap(x => x.toJSON());
 	}
 
 	toString () {
