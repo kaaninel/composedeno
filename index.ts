@@ -7,8 +7,6 @@ import { Volume } from "./Volume.ts";
 export * from "./Volume.ts";
 export * from "./Network.ts";
 export * from "./Service.ts";
-export * from "./Docker/File.ts";
-export * from "./Docker/Docker.ts";
 
 export class Compose {
 	volumes: Set<Volume> = new Set();

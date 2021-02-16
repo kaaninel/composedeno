@@ -21,7 +21,7 @@ export class DockerCompose {
 	volumes: Record<string, DockerVolume> = {};
 
 	constructor (Data: Partial<DockerCompose>) {
-		Object.assign(this, Data);;
+		Object.assign(this, Data);
 	}
 }
 
@@ -31,7 +31,7 @@ export class DockerNetwork {
 	driver = DockerNetworkDrivers.Overlay;
 
 	constructor (Data: Partial<DockerNetwork>) {
-		Object.assign(this, Data);;
+		Object.assign(this, Data);
 	}
 }
 
@@ -39,17 +39,17 @@ export class DockerVolume {
 	external = false;
 
 	constructor (Data: Partial<DockerVolume>) {
-		Object.assign(this, Data);;
+		Object.assign(this, Data);
 	}
 }
 
 export class DockerImage {
 	domain?: string;
 	name!: string;
-	tag: string = "latest";
+	tag = "latest";
 
 	constructor (Data: Partial<DockerImage>) {
-		Object.assign(this, Data);;
+		Object.assign(this, Data);
 	}
 	toJSON () {
 		const name = `${this.name}:${this.tag}`;
@@ -69,7 +69,7 @@ export class DockerServiceNetwork {
 	aliases: string[] = [];
 
 	constructor (Data: Partial<DockerServiceNetwork>) {
-		Object.assign(this, Data);;
+		Object.assign(this, Data);
 	}
 }
 
@@ -85,7 +85,7 @@ export class DockerServiceDeploy {
 		};
 
 	constructor (Data: Partial<DockerServiceDeploy>) {
-		Object.assign(this, Data);;
+		Object.assign(this, Data);
 	}
 }
 
@@ -109,7 +109,7 @@ export class DockerServiceVolume {
 	readonly = false;
 
 	constructor (Data: Partial<DockerServiceVolume>) {
-		Object.assign(this, Data);;
+		Object.assign(this, Data);
 	}
 
 	toJSON () {
@@ -123,7 +123,7 @@ export class DockerServicePort {
 	protocol?: string;
 
 	constructor (Data: Partial<DockerServicePort>) {
-		Object.assign(this, Data);;
+		Object.assign(this, Data);
 	}
 
 	toJSON () {
@@ -144,7 +144,7 @@ export class DockerServiceBuild {
 	target?: string;
 
 	constructor (Data: Partial<DockerServiceBuild>) {
-		Object.assign(this, Data);;
+		Object.assign(this, Data);
 	}
 }
 
@@ -163,6 +163,6 @@ export class DockerService {
 	ports: DockerServicePort[] = [];
 
 	constructor (Data: Partial<DockerService>) {
-		Object.assign(this, Data);;
+		Object.assign(this, Data);
 	}
 }
