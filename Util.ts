@@ -1,6 +1,6 @@
 import { Bind } from "./index.ts";
 import { createHash } from "https://deno.land/std@0.82.0/hash/mod.ts";
-import { join } from "https://deno.land/std@0.82.0/path/posix.ts";
+import { join } from "https://deno.land/std@0.82.0/path/mod.ts";
 
 
 export class TempFile {
