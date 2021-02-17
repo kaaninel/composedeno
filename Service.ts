@@ -1,5 +1,5 @@
 import { LabelGenerator, Network, PortMap } from "./Network.ts";
-import { Mountable } from "./Volume.ts";
+import { Config, Mountable, Volume } from "./Volume.ts";
 import { DockerImage, DockerServiceDeploy, DockerService, DockerServiceHealthcheck, DockerServiceBuild } from "./Docker/Docker.ts";
 import { TempFile, toObject } from "./Util.ts";
 import { Dockerfile } from "./Docker/File.ts";
@@ -113,6 +113,7 @@ export class Service {
 	Aliases: Set<string> = new Set();
 	deploy?: Deploy;
 	healthcheck?: Healthcheck;
+	configs: Set<Config> = new Set();
 
 	constructor (
 		public name: string,
@@ -125,6 +126,9 @@ export class Service {
 	}
 	AddVolume (...instances: Mountable[]) {
 		instances.forEach(x => this.volumes.add(x));
+	}
+	AddConfig (...instances: Config[]) {
+		instances.forEach(x => this.configs.add(x));
 	}
 	AddDependency (...instances: Service[]) {
 		instances.forEach(x => this.Dependecies.add(x));
@@ -154,7 +158,8 @@ export class Service {
 			ports: Array.from(this.ports).map(x => x.Service(this)),
 			deploy: this.deploy?.Service(this),
 			healthcheck: this.healthcheck?.Service(),
-			depends_on: Array.from(this.Dependecies).map(x => x.name)
+			depends_on: Array.from(this.Dependecies).map(x => x.name),
+			configs: Array.from(this.configs).map(x => x.Service(this)),
 		});
 		if (this.Base instanceof Image)
 			compose.image = this.Base.Service();

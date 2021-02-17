@@ -19,6 +19,7 @@ export class DockerCompose {
 	networks: Record<string, DockerNetwork> = {};
 	services: Record<string, DockerService> = {};
 	volumes: Record<string, DockerVolume> = {};
+	configs: Record<string, DockerVolume> = {};
 
 	constructor (Data: Partial<DockerCompose>) {
 		Object.assign(this, Data);
@@ -39,6 +40,15 @@ export class DockerVolume {
 	external = false;
 
 	constructor (Data: Partial<DockerVolume>) {
+		Object.assign(this, Data);
+	}
+}
+
+export class DockerConfig {
+	external = false;
+	file!: string;
+
+	constructor (Data: Partial<DockerConfig>) {
 		Object.assign(this, Data);
 	}
 }
@@ -117,6 +127,22 @@ export class DockerServiceVolume {
 	}
 }
 
+export class DockerServiceConfig {
+	source!: string;
+	destination!: string;
+
+	constructor (Data: Partial<DockerServiceVolume>) {
+		Object.assign(this, Data);
+	}
+
+	toJSON () {
+		return {
+			source: this.source,
+			target: this.destination
+		};
+	}
+}
+
 export class DockerServicePort {
 	source!: number;
 	destination!: number;
@@ -161,6 +187,7 @@ export class DockerService {
 	deploy?: DockerServiceDeploy;
 	healthcheck?: DockerServiceHealthcheck;
 	ports: DockerServicePort[] = [];
+	configs: DockerServiceConfig[] = [];
 
 	constructor (Data: Partial<DockerService>) {
 		Object.assign(this, Data);

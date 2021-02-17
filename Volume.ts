@@ -1,5 +1,5 @@
 import { Service } from "./Service.ts";
-import { DockerServiceVolume, DockerVolume } from "./Docker/Docker.ts";
+import { DockerConfig, DockerServiceConfig, DockerServiceVolume, DockerVolume } from "./Docker/Docker.ts";
 
 export class Mountable {
 	constructor (
@@ -26,6 +26,26 @@ export class Volume extends Mountable {
 	Compose () {
 		return new DockerVolume({
 			external: this.external
+		});
+	}
+}
+
+export class Config {
+	constructor (
+		public name: string,
+		public source: string,
+		public destination: string,
+		public external = true
+	) {}
+
+	Service (_target: Service): DockerServiceConfig {
+		return new DockerServiceConfig({ ...this });
+	}
+
+	Compose () {
+		return new DockerConfig({
+			external: this.external,
+			file: this.source
 		});
 	}
 }
