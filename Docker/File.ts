@@ -109,8 +109,8 @@ export class Add extends Instruction {
 }
 
 export class Copy extends Instruction {
-	constructor (public Src: string, public Dst: string) {
-		super("COPY", [ JSON.stringify(Src), JSON.stringify(Dst) ]);
+	constructor (public Src: string, public Dst: string, Stage?: string) {
+		super("COPY", [ Stage ? `--from=${Stage}` : "", JSON.stringify(Src), JSON.stringify(Dst) ].filter(x => x));
 	}
 
 }
